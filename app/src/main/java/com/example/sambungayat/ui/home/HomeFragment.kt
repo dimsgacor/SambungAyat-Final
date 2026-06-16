@@ -1,29 +1,41 @@
 package com.example.sambungayat.ui.home
 
-import android.graphics.Color
+import android.content.Intent
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.sambungayat.R
 import com.example.sambungayat.databinding.FragmentHomeBinding
 import com.example.sambungayat.network.ApiResult
 import com.example.sambungayat.network.SessionManager
+import com.example.sambungayat.network.model.response.LeaderboardResponse
+import com.example.sambungayat.network.repository.QuranRepository
 import com.example.sambungayat.network.repository.UserRepository
+import com.example.sambungayat.ui.game.GameActivity
+import com.example.sambungayat.ui.sambungayat.HafalanConfig
+import com.example.sambungayat.ui.sambungayat.SambungAyatListActivity
 import kotlinx.coroutines.launch
-import android.widget.LinearLayout
+
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private val userRepository = UserRepository()
+    private val userRepository  = UserRepository()
+    private val quranRepository = QuranRepository()
     private lateinit var sessionManager: SessionManager
 
-    private val days = listOf("MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN")
+    // Data untuk Continue Learning
+    private var continueChapterId   = 1
+    private var continueChapterName = ""
+    private var continueVerseCount  = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -34,73 +46,210 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         sessionManager = SessionManager(requireContext())
-        buildWeeklyDays()
+
+        binding.btnSambungAyat.setOnClickListener {
+            startActivity(Intent(requireContext(), SambungAyatListActivity::class.java))
+        }
+
+        loadData()
+    }
+
+    override fun onResume() {
+        super.onResume()
         loadData()
     }
 
     private fun loadData() {
         val userId = sessionManager.getUserId()
+        binding.tvWelcomeUser.text = "Assalamu Alaikum, ${sessionManager.getUsername()}!"
+
+        // Tampilkan cache lokal langsung
+        binding.tvTotalScore.text = sessionManager.getTotalScore().toString()
+        binding.tvBestStreak.text = sessionManager.getBestStreak().toString()
+        updateHafalanProgress(sessionManager.getHighestSurah())
+        setupContinueFromCache()
 
         viewLifecycleOwner.lifecycleScope.launch {
-            // Welcome name from session (instant)
-            binding.tvWelcomeUser.text = "Assalamu Alaikum, ${sessionManager.getUsername()}!"
 
             // Statistics
             when (val result = userRepository.getStatistics(userId)) {
                 is ApiResult.Success -> {
-                    binding.tvTotalScore.text = result.data.totalScore.toString()
-                    binding.tvBestStreak.text = result.data.bestStreak.toString()
+                    val d = result.data
+                    binding.tvTotalScore.text = d.totalScore.toString()
+                    binding.tvBestStreak.text = d.bestStreak.toString()
+                    updateHafalanProgress(d.highestUnlockedSurah)
+                    sessionManager.saveProgress(
+                        totalScore           = d.totalScore,
+                        bestStreak           = d.bestStreak,
+                        currentSurah         = d.currentSurah,
+                        currentVerse         = sessionManager.getCurrentVerse(),
+                        highestUnlockedSurah = d.highestUnlockedSurah
+                    )
                 }
                 else -> {}
             }
 
-            // Progress (current surah)
+            // Continue Learning — resolve nama surah dari HafalanConfig + API
             when (val result = userRepository.getProgress(userId)) {
                 is ApiResult.Success -> {
                     val d = result.data
-                    binding.tvContinueSurah.text = "Juz — Surah ${d.currentSurah}, Ayat ${d.currentVerse}"
-                    val pct = ((d.currentSurah.toFloat() / 114f) * 100).toInt()
+                    // currentSurah di DB menyimpan chapterId (bukan order)
+                    val storedChapterId = d.currentSurah
+                    val currentVerse    = d.currentVerse
+
+                    // Ambil nama surah dari detail API
+                    loadContinueSurahName(storedChapterId, currentVerse)
+
+                    val highestOrder = d.highestUnlockedSurah.coerceAtLeast(1)
+                    val pct = ((highestOrder.toFloat() / HafalanConfig.TOTAL.toFloat()) * 100).toInt()
                     binding.progressContinue.progress = pct
                 }
+                else -> setupContinueFromCache()
+            }
+
+            // Leaderboard
+            when (val result = quranRepository.getLeaderboard(5)) {
+                is ApiResult.Success -> buildLeaderboard(result.data)
                 else -> {}
             }
         }
     }
 
-    private fun buildWeeklyDays() {
-        val container = binding.layoutWeeklyDays
+    /**
+     * Fallback ke cache lokal saat API belum tersedia.
+     * currentSurah di cache menyimpan chapterId.
+     */
+    private fun setupContinueFromCache() {
+        val chapterId = sessionManager.getCurrentSurah()
+        val hafalanSurah = HafalanConfig.HAFALAN_LIST.find { it.chapterId == chapterId }
+
+        continueChapterId   = chapterId
+        continueChapterName = hafalanSurah?.chapterName ?: "Surah $chapterId"
+        continueVerseCount  = 0
+
+        binding.tvContinueSurah.text =
+            "$continueChapterName · Ayat ${sessionManager.getCurrentVerse()}"
+
+        binding.cardContinue.setOnClickListener {
+            openGame(continueChapterId, continueChapterName, continueVerseCount)
+        }
+    }
+
+    private suspend fun loadContinueSurahName(chapterId: Int, currentVerse: Int) {
+        continueChapterId = chapterId
+
+        when (val result = quranRepository.getSurahDetail(chapterId)) {
+            is ApiResult.Success -> {
+                continueChapterName = result.data.surah.name
+                continueVerseCount  = result.data.surah.verseCount
+                binding.tvContinueSurah.text = "${result.data.surah.name} · Ayat $currentVerse"
+            }
+            else -> {
+                val hafalanSurah = HafalanConfig.HAFALAN_LIST.find { it.chapterId == chapterId }
+                continueChapterName = hafalanSurah?.chapterName ?: "Surah $chapterId"
+                binding.tvContinueSurah.text = "$continueChapterName · Ayat $currentVerse"
+            }
+        }
+
+        binding.cardContinue.setOnClickListener {
+            openGame(continueChapterId, continueChapterName, continueVerseCount)
+        }
+    }
+
+    /**
+     * Continue Learning → langsung buka GameActivity.
+     * Membuka Mode Sambung Ayat pada surah yang sedang dikerjakan user.
+     */
+    private fun openGame(chapterId: Int, chapterName: String, verseCount: Int) {
+        startActivity(
+            Intent(requireContext(), GameActivity::class.java).apply {
+                putExtra(GameActivity.EXTRA_CHAPTER_ID,   chapterId)
+                putExtra(GameActivity.EXTRA_CHAPTER_NAME, chapterName)
+                putExtra(GameActivity.EXTRA_VERSE_COUNT,  verseCount)
+            }
+        )
+    }
+
+    /**
+     * Progress Hafalan dihitung dari highestOrder:
+     * - Surah selesai = highestOrder - 1
+     * - Total = HafalanConfig.TOTAL (30 surah)
+     */
+    private fun updateHafalanProgress(highestOrder: Int) {
+        val done = (highestOrder - 1).coerceAtLeast(0)
+        val pct  = ((done.toFloat() / HafalanConfig.TOTAL.toFloat()) * 100).toInt()
+        binding.tvHafalanCount.text   = "$done / ${HafalanConfig.TOTAL} Surah Selesai"
+        binding.tvHafalanPercent.text = "$pct%"
+        binding.progressHafalan.progress = pct
+    }
+
+    private fun buildLeaderboard(items: List<LeaderboardResponse>) {
+        val container = binding.layoutLeaderboard
         container.removeAllViews()
 
-        val today = java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_WEEK)
-        val todayIndex = (today + 5) % 7 // Map Sunday=1 → 6, Monday=2 → 0
+        if (items.isEmpty()) {
+            val empty = TextView(requireContext()).apply {
+                text = "Belum ada data leaderboard"
+                textSize = 14f
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.on_surface_variant))
+            }
+            container.addView(empty)
+            return
+        }
 
-        days.forEachIndexed { index, day ->
-            val tv = TextView(requireContext()).apply {
-                text = day
-                textSize = 11f
+        items.forEachIndexed { index, item ->
+            val row = LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity     = Gravity.CENTER_VERTICAL
+                setPadding(0, 12, 0, 12)
+            }
+
+            val tvRank = TextView(requireContext()).apply {
+                text     = "#${item.rank}"
+                textSize = 14f
+                typeface = android.graphics.Typeface.DEFAULT_BOLD
                 setTextColor(
-                    if (index == todayIndex) Color.WHITE
-                    else Color.parseColor("#404944")
+                    if (item.rank == 1)
+                        ContextCompat.getColor(requireContext(), R.color.secondary)
+                    else
+                        ContextCompat.getColor(requireContext(), R.color.on_surface_variant)
                 )
-                setBackgroundResource(
-                    if (index == todayIndex) R.drawable.bg_day_active
-                    else R.drawable.bg_day_inactive
-                )
-                setPadding(12, 16, 12, 16)
-                gravity = android.view.Gravity.CENTER
+                minWidth = 48
             }
 
-            val params = LinearLayout.LayoutParams(
-                0,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                weight = 1f
-                marginEnd = if (index < days.size - 1) 4 else 0
+            val tvName = TextView(requireContext()).apply {
+                text         = item.name
+                textSize     = 14f
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.on_surface))
+                layoutParams = LinearLayout.LayoutParams(
+                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
+                )
             }
-            tv.layoutParams = params
-            container.addView(tv)
+
+            val tvScore = TextView(requireContext()).apply {
+                text     = item.totalScore.toString()
+                textSize = 14f
+                typeface = android.graphics.Typeface.DEFAULT_BOLD
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
+                gravity  = Gravity.END
+            }
+
+            row.addView(tvRank)
+            row.addView(tvName)
+            row.addView(tvScore)
+            container.addView(row)
+
+            if (index < items.size - 1) {
+                container.addView(View(requireContext()).apply {
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, 1
+                    )
+                    setBackgroundColor(
+                        ContextCompat.getColor(requireContext(), R.color.outline_variant)
+                    )
+                })
+            }
         }
     }
 

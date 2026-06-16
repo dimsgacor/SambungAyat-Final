@@ -199,4 +199,36 @@
         android:layout_marginBottom="@dimen/spacing_lg"
         android:text="Periksa" />
 
+    <!-- Tombol setelah SurahCompleted -->
+    <LinearLayout
+        android:id="@+id/layoutCompletedButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/spacing_container"
+        android:paddingTop="@dimen/spacing_md"
+        android:paddingBottom="@dimen/spacing_lg"
+        android:visibility="gone">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBackToHome"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="@dimen/spacing_sm"
+            android:text="Kembali ke Home"
+            android:textColor="@color/primary" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLanjutkan"
+            style="@style/Widget.SambungAyat.Button.Primary"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:text="Lanjutkan" />
+
+    </LinearLayout>
+
 </LinearLayout>

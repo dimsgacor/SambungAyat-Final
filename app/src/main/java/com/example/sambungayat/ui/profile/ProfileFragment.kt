@@ -32,7 +32,6 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         sessionManager = SessionManager(requireContext())
         loadData()
         setupListeners()
@@ -41,30 +40,44 @@ class ProfileFragment : Fragment() {
     private fun loadData() {
         val userId = sessionManager.getUserId()
 
+        // Tampilkan cache lokal dulu sementara menunggu API
+        binding.tvProfileName.text   = sessionManager.getUsername()
+        binding.tvProfileScore.text  = sessionManager.getTotalScore().toString()
+        binding.tvProfileStreak.text = sessionManager.getBestStreak().toString()
+
         viewLifecycleOwner.lifecycleScope.launch {
-            // Profile
+
+            // Profile — nama + email
             when (val result = userRepository.getProfile(userId)) {
                 is ApiResult.Success -> {
-                    binding.tvProfileName.text = result.data.name
+                    binding.tvProfileName.text  = result.data.name
                     binding.tvProfileEmail.text = result.data.email
                 }
-                else -> {
-                    binding.tvProfileName.text = sessionManager.getUsername()
-                }
+                else -> {}
             }
 
-            // Statistics
+            // Statistics — score + streak + progress
             when (val result = userRepository.getStatistics(userId)) {
                 is ApiResult.Success -> {
                     val d = result.data
-                    binding.tvProfileScore.text = d.totalScore.toString()
+                    binding.tvProfileScore.text  = d.totalScore.toString()
+                    // tvProfileStreak menampilkan bestStreak (pencapaian tertinggi)
                     binding.tvProfileStreak.text = d.bestStreak.toString()
 
                     val pct = ((d.highestUnlockedSurah.toFloat() / 114f) * 100).toInt()
-                    binding.progressQuran.progress = pct
-                    binding.tvProgressPercent.text = "$pct% Completed"
-                    binding.tvProgressDetail.text =
-                        "You've mastered ${d.highestUnlockedSurah} Surahs this month. Keep up!"
+                    binding.progressQuran.progress  = pct
+                    binding.tvProgressPercent.text  = "$pct% Completed"
+                    binding.tvProgressDetail.text   =
+                        "You've unlocked ${d.highestUnlockedSurah} of 114 Surahs. Keep going!"
+
+                    // Sync cache lokal
+                    sessionManager.saveProgress(
+                        totalScore           = d.totalScore,
+                        bestStreak           = d.bestStreak,
+                        currentSurah         = d.currentSurah,
+                        currentVerse         = sessionManager.getCurrentVerse(),
+                        highestUnlockedSurah = d.highestUnlockedSurah
+                    )
                 }
                 else -> {}
             }
@@ -73,9 +86,7 @@ class ProfileFragment : Fragment() {
 
     private fun setupListeners() {
         binding.cardLogout.setOnClickListener { confirmLogout() }
-        binding.cardEditProfile.setOnClickListener {
-            // Placeholder — Edit Profile belum diimplementasikan
-        }
+        binding.cardEditProfile.setOnClickListener { /* TODO: Edit Profile */ }
     }
 
     private fun confirmLogout() {

@@ -64,7 +64,6 @@
             android:orientation="horizontal"
             android:layout_marginBottom="@dimen/spacing_lg">
 
-            <!-- Total Score card -->
             <com.google.android.material.card.MaterialCardView
                 style="@style/Widget.SambungAyat.Card.Tonal"
                 android:layout_width="0dp"
@@ -104,7 +103,6 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Best Streak card -->
             <com.google.android.material.card.MaterialCardView
                 style="@style/Widget.SambungAyat.Card.Tonal"
                 android:layout_width="0dp"
@@ -128,7 +126,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:gravity="center">
+                        android:gravity="center_vertical">
 
                         <TextView
                             android:id="@+id/tvBestStreak"
@@ -169,7 +167,7 @@
             app:cardCornerRadius="@dimen/card_radius"
             app:cardBackgroundColor="@color/primary"
             app:cardElevation="0dp"
-            android:layout_marginBottom="@dimen/spacing_lg">
+            android:layout_marginBottom="@dimen/spacing_md">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -197,7 +195,7 @@
                         android:id="@+id/tvContinueSurah"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Juz 30: Surah An-Naba"
+                        android:text="Memuat..."
                         android:textSize="@dimen/text_headline_sm"
                         android:textColor="@color/on_primary"
                         android:textStyle="bold"
@@ -208,7 +206,7 @@
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
                         android:layout_height="6dp"
-                        android:progress="65"
+                        android:progress="0"
                         android:progressTint="@color/secondary_container"
                         android:progressBackgroundTint="#33FFFFFF" />
 
@@ -224,7 +222,78 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Weekly Progress -->
+        <!-- Tombol Sambung Ayat -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSambungAyat"
+            style="@style/Widget.SambungAyat.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="🎮  Sambung Ayat"
+            android:layout_marginBottom="@dimen/spacing_lg" />
+
+        <!-- Progress Hafalan -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📈 Progress Hafalan"
+            android:textSize="@dimen/text_headline_sm"
+            android:textColor="@color/on_surface"
+            android:textStyle="bold"
+            android:layout_marginBottom="@dimen/spacing_stack" />
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.SambungAyat.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_lg">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_md">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="@dimen/spacing_sm">
+
+                    <TextView
+                        android:id="@+id/tvHafalanCount"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="0 / 114 Surah Selesai"
+                        android:textSize="@dimen/text_body_lg"
+                        android:textColor="@color/on_surface"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvHafalanPercent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0%"
+                        android:textSize="@dimen/text_body_md"
+                        android:textColor="@color/primary" />
+
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/progressHafalan"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"
+                    android:progress="0"
+                    android:progressTint="@color/secondary_fixed_dim"
+                    android:progressBackgroundTint="@color/surface_container" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Leaderboard -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -236,66 +305,24 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/weekly_progress"
+                android:text="🏆 Leaderboard"
                 android:textSize="@dimen/text_headline_sm"
                 android:textColor="@color/on_surface"
                 android:textStyle="bold" />
 
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_refresh" />
-
         </LinearLayout>
 
-        <!-- Weekly days bar -->
         <com.google.android.material.card.MaterialCardView
-            style="@style/Widget.SambungAyat.Card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_lg">
-
-            <LinearLayout
-                android:id="@+id/layoutWeeklyDays"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="@dimen/spacing_md"
-                android:gravity="center" />
-
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Daily Verse card -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardDailyVerse"
             style="@style/Widget.SambungAyat.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <LinearLayout
+                android:id="@+id/layoutLeaderboard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="@dimen/spacing_md">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Daily Verse"
-                    android:textSize="@dimen/text_headline_sm"
-                    android:textColor="@color/on_surface"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="@dimen/spacing_sm" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text='&quot;Indeed, with hardship comes ease.&quot; (94:6)'
-                    android:textSize="@dimen/text_body_md"
-                    android:textColor="@color/on_surface_variant"
-                    android:fontFamily="serif" />
-
-            </LinearLayout>
+                android:padding="@dimen/spacing_md" />
 
         </com.google.android.material.card.MaterialCardView>
 

@@ -10,13 +10,15 @@ import com.example.sambungayat.databinding.ActivityLoginBinding
 import com.example.sambungayat.network.ApiResult
 import com.example.sambungayat.network.SessionManager
 import com.example.sambungayat.network.repository.AuthRepository
+import com.example.sambungayat.network.repository.UserRepository
 import com.example.sambungayat.ui.main.MainActivity
 import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
-    private val repository = AuthRepository()
+    private val authRepository = AuthRepository()
+    private val userRepository = UserRepository()
     private lateinit var sessionManager: SessionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,15 +57,18 @@ class LoginActivity : AppCompatActivity() {
         } else binding.tilPassword.error = null
 
         if (!valid) return
-
         setLoading(true)
 
         lifecycleScope.launch {
-            when (val result = repository.login(email, password)) {
+            when (val result = authRepository.login(email, password)) {
                 is ApiResult.Success -> {
                     val data = result.data
-                    sessionManager.saveSession(data.userId ?: 0, data.username ?: "")
-                    goToMain()
+                    val userId   = data.userId ?: 0
+                    val username = data.username ?: ""
+                    sessionManager.saveSession(userId, username)
+
+                    // Langsung sync progress dari backend ke cache lokal
+                    syncProgressFromBackend(userId)
                 }
                 is ApiResult.Error -> {
                     setLoading(false)
@@ -74,6 +79,26 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    private suspend fun syncProgressFromBackend(userId: Int) {
+        when (val result = userRepository.getProgress(userId)) {
+            is ApiResult.Success -> {
+                val d = result.data
+                sessionManager.saveProgress(
+                    totalScore           = d.totalScore,
+                    bestStreak           = d.bestStreak,
+                    currentSurah         = d.currentSurah,
+                    currentVerse         = d.currentVerse,
+                    highestUnlockedSurah = d.highestUnlockedSurah
+                )
+            }
+            else -> {
+                // Tidak ada progress sebelumnya — biarkan default (0, surah 1, ayat 1)
+            }
+        }
+        setLoading(false)
+        goToMain()
+    }
+
     private fun goToMain() {
         startActivity(Intent(this, MainActivity::class.java))
         finish()
@@ -81,6 +106,6 @@ class LoginActivity : AppCompatActivity() {
 
     private fun setLoading(loading: Boolean) {
         binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
-        binding.btnLogin.isEnabled = !loading
+        binding.btnLogin.isEnabled     = !loading
     }
 }

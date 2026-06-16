@@ -12,7 +12,6 @@
         android:theme="@style/Theme.SambungAyat"
         android:usesCleartextTraffic="true">
 
-        <!-- LAUNCHER -->
         <activity
             android:name=".ui.auth.LoginActivity"
             android:exported="true">
@@ -22,26 +21,15 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".ui.auth.RegisterActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".ui.main.MainActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".ui.quran.ChapterListActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".ui.surahdetail.SurahDetailActivity"
-            android:exported="false" />
-
+        <activity android:name=".ui.auth.RegisterActivity"         android:exported="false" />
+        <activity android:name=".ui.main.MainActivity"             android:exported="false" />
+        <activity android:name=".ui.quran.ChapterListActivity"     android:exported="false" />
+        <activity android:name=".ui.surahdetail.SurahDetailActivity" android:exported="false" />
         <activity
             android:name=".ui.game.GameActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.sambungayat.SambungAyatListActivity" android:exported="false" />
 
     </application>
 

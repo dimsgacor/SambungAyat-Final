@@ -16,7 +16,11 @@ class GameManager(
     }
 
     fun startSurah(surahId: Int, totalAyat: Int) {
-        scoreManager.reset()
+        // BUG FIX #1: Hapus scoreManager.reset() dari sini.
+        // Score adalah nilai kumulatif global yang di-inject dari backend via initFromBackend().
+        // Me-reset score di sini membuang nilai yang baru saja di-inject,
+        // sehingga score selalu mulai dari 0 setiap surah baru.
+        // Combo dan streak boleh di-reset karena memang per-surah.
         comboManager.reset()
         streakManager.reset()
         surahProgressManager.startSurah(surahId, totalAyat)
