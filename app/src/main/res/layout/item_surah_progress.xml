@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="@dimen/card_radius"
+    app:cardCornerRadius="20dp"
     app:cardBackgroundColor="@color/surface_container_lowest"
     app:cardElevation="0dp"
     app:strokeColor="@color/outline_variant"
@@ -18,13 +18,13 @@
         android:orientation="vertical"
         android:padding="@dimen/spacing_md">
 
-        <!-- Row 1: nama + status -->
+        <!-- Row 1: nama + status badge -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="@dimen/spacing_xs">
+            android:layout_marginBottom="@dimen/spacing_md">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -51,14 +51,34 @@
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/tvStatusLabel"
+            <!-- Status badge: pill dengan icon + text -->
+            <LinearLayout
+                android:id="@+id/layoutStatusBadge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="✅ Lulus"
-                android:textSize="@dimen/text_body_md"
-                android:textColor="@color/primary"
-                android:textStyle="bold" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_status_done"
+                android:paddingHorizontal="@dimen/spacing_sm"
+                android:paddingVertical="6dp">
+
+                <ImageView
+                    android:id="@+id/ivStatusIcon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_check_circle"
+                    android:layout_marginEnd="4dp" />
+
+                <TextView
+                    android:id="@+id/tvStatusLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lulus"
+                    android:textSize="12sp"
+                    android:textColor="@color/status_done_text"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -67,9 +87,9 @@
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:layout_height="6dp"
+            android:layout_height="8dp"
             android:progress="0"
-            android:progressTint="@color/secondary_fixed_dim"
+            android:progressTint="@color/secondary"
             android:progressBackgroundTint="@color/surface_container"
             android:layout_marginBottom="@dimen/spacing_xs" />
 

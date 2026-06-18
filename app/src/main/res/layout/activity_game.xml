@@ -24,6 +24,7 @@
             android:src="@drawable/ic_chevron_right"
             android:rotation="180"
             android:padding="8dp"
+            app:tint="@color/primary"
             android:layout_marginEnd="@dimen/spacing_sm"
             android:background="?attr/selectableItemBackgroundBorderless" />
 
@@ -52,88 +53,100 @@
 
         </LinearLayout>
 
-        <!-- Score + Combo + Streak -->
+    </LinearLayout>
+
+    <!-- Stat card: Score + Combo + Streak dalam satu card horizontal -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/spacing_container"
+        android:paddingBottom="@dimen/spacing_md">
+
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/bg_stat_card_purple"
+            android:paddingVertical="@dimen/spacing_sm"
+            android:layout_marginEnd="6dp">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/tvScore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:layout_marginEnd="@dimen/spacing_md">
+                android:text="0"
+                android:textSize="@dimen/text_headline_sm"
+                android:textColor="@color/primary"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/tvScore"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0"
-                    android:textSize="@dimen/text_headline_sm"
-                    android:textColor="@color/secondary"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="SCORE"
-                    android:textSize="10sp"
-                    android:textColor="@color/on_surface_variant"
-                    android:letterSpacing="0.05" />
-
-            </LinearLayout>
-
-            <LinearLayout
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:layout_marginEnd="@dimen/spacing_md">
+                android:text="SCORE"
+                android:textSize="10sp"
+                android:textColor="@color/on_surface_variant"
+                android:letterSpacing="0.05" />
 
-                <TextView
-                    android:id="@+id/tvCombo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="x1"
-                    android:textSize="@dimen/text_headline_sm"
-                    android:textColor="@color/primary"
-                    android:textStyle="bold" />
+        </LinearLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="COMBO"
-                    android:textSize="10sp"
-                    android:textColor="@color/on_surface_variant"
-                    android:letterSpacing="0.05" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/bg_stat_card_gold"
+            android:paddingVertical="@dimen/spacing_sm"
+            android:layout_marginHorizontal="6dp">
 
-            </LinearLayout>
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/tvCombo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center">
+                android:text="x1"
+                android:textSize="@dimen/text_headline_sm"
+                android:textColor="@color/gold_deep"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/tvStreak"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0"
-                    android:textSize="@dimen/text_headline_sm"
-                    android:textColor="@color/tertiary"
-                    android:textStyle="bold" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="COMBO"
+                android:textSize="10sp"
+                android:textColor="@color/on_surface_variant"
+                android:letterSpacing="0.05" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="STREAK"
-                    android:textSize="10sp"
-                    android:textColor="@color/on_surface_variant"
-                    android:letterSpacing="0.05" />
+        </LinearLayout>
 
-            </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/bg_stat_card_purple"
+            android:paddingVertical="@dimen/spacing_sm"
+            android:layout_marginStart="6dp">
+
+            <TextView
+                android:id="@+id/tvStreak"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textSize="@dimen/text_headline_sm"
+                android:textColor="@color/tertiary"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="STREAK"
+                android:textSize="10sp"
+                android:textColor="@color/on_surface_variant"
+                android:letterSpacing="0.05" />
 
         </LinearLayout>
 

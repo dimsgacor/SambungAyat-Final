@@ -30,10 +30,9 @@
         <item name="android:navigationBarColor">@color/surface_container_lowest</item>
     </style>
 
-    <!-- Auth screens — same theme, clean white -->
     <style name="Theme.SambungAyat.Auth" parent="Theme.SambungAyat" />
 
-    <!-- TextInputLayout: Outlined + Emerald focus -->
+    <!-- TextInputLayout: Outlined + Purple focus -->
     <style name="Widget.SambungAyat.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="boxCornerRadiusTopStart">12dp</item>
         <item name="boxCornerRadiusTopEnd">12dp</item>
@@ -42,7 +41,7 @@
         <item name="boxStrokeColor">@color/input_stroke_color</item>
     </style>
 
-    <!-- Primary Button: Deep Emerald, 16dp radius -->
+    <!-- Primary Button: Royal Purple, 16dp radius -->
     <style name="Widget.SambungAyat.Button.Primary" parent="Widget.Material3.Button">
         <item name="cornerRadius">16dp</item>
         <item name="backgroundTint">@color/primary</item>
@@ -53,17 +52,40 @@
         <item name="android:paddingBottom">14dp</item>
     </style>
 
-    <!-- Card: 24dp radius, white bg, emerald shadow -->
+    <!-- Gold Accent Button — untuk CTA premium/achievement -->
+    <style name="Widget.SambungAyat.Button.Gold" parent="Widget.Material3.Button">
+        <item name="cornerRadius">16dp</item>
+        <item name="backgroundTint">@color/secondary</item>
+        <item name="android:textColor">@color/on_secondary</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+    </style>
+
+    <!-- Card: 24dp radius, white bg -->
     <style name="Widget.SambungAyat.Card" parent="Widget.Material3.CardView.Elevated">
         <item name="cardCornerRadius">24dp</item>
         <item name="cardBackgroundColor">@color/surface_container_lowest</item>
         <item name="cardElevation">0dp</item>
         <item name="strokeColor">@color/outline_variant</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <!-- Stat Card — tonal purple -->
+    <style name="Widget.SambungAyat.Card.Tonal" parent="Widget.SambungAyat.Card">
+        <item name="cardBackgroundColor">@color/purple_tint</item>
         <item name="strokeWidth">0dp</item>
     </style>
 
-    <!-- Stat Card (tonal) -->
-    <style name="Widget.SambungAyat.Card.Tonal" parent="Widget.SambungAyat.Card">
-        <item name="cardBackgroundColor">@color/emerald_tint</item>
+    <!-- Stat Card — tonal gold -->
+    <style name="Widget.SambungAyat.Card.Gold" parent="Widget.SambungAyat.Card">
+        <item name="cardBackgroundColor">@color/gold_tint</item>
+        <item name="strokeWidth">0dp</item>
+    </style>
+
+    <!-- Hero Card — Continue Learning, no stroke -->
+    <style name="Widget.SambungAyat.Card.Hero" parent="Widget.SambungAyat.Card">
+        <item name="cardCornerRadius">28dp</item>
+        <item name="strokeWidth">0dp</item>
     </style>
 </resources>

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/background">
-
     <!-- AppBar -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,8 +23,26 @@
             android:src="@drawable/ic_chevron_right"
             android:rotation="180"
             android:padding="8dp"
+            app:tint="@color/primary"
             android:layout_marginEnd="@dimen/spacing_sm"
             android:background="?attr/selectableItemBackgroundBorderless" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/spacing_sm"
+            app:cardCornerRadius="14dp"
+            app:cardBackgroundColor="@color/primary_container"
+            app:cardElevation="0dp">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="9dp"
+                android:src="@drawable/ic_quran_book"
+                app:tint="@color/primary" />
+
+        </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -37,13 +55,14 @@
                 android:layout_height="wrap_content"
                 android:text="MODE HAFALAN"
                 android:textSize="@dimen/text_label_caps"
-                android:textColor="@color/on_surface_variant"
-                android:letterSpacing="0.05" />
+                android:textColor="@color/secondary"
+                android:letterSpacing="0.08"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🎮 Sambung Ayat"
+                android:text="Sambung Ayat"
                 android:textSize="@dimen/text_headline_sm"
                 android:textColor="@color/on_surface"
                 android:textStyle="bold" />
